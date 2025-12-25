@@ -4,9 +4,9 @@ import fs from "fs";
 
  // Configuration
  cloudinary.config({ 
-    cloud_name: process.env.cloud_name, 
-    api_key: process.env.api_key, 
-    api_secret: process.env.api_secret // Click 'View API Keys' above to copy your API secret
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
+    api_key: process.env.CLOUDINARY_API_KEY, 
+    api_secret: process.env.CLOUDINARY_API_SECRET // Click 'View API Keys' above to copy your API secret
 });
 
 const uploadOnCloudinary= async (LocalFilePath)=>{
@@ -17,28 +17,30 @@ const uploadOnCloudinary= async (LocalFilePath)=>{
             resource_type:"auto"
         })
         //file has been uploaded successfully
-        console.log('file is uploaded on cloudinary',response.url);
+    //    console.log('file is uploaded on cloudinary',response.url);
+       fs.unlinkSync(LocalFilePath) //remove the local file
         return response 
     } catch (error) {
-        fs.unlinkSync(LocalFilePath) //remove the local file
+        fs.unlinkSync(LocalFilePath) //remove the local file as upload failed
         return null 
     }
 }
 
-
-// Upload an image
-const uploadResult = await cloudinary.uploader
-.upload(
-    'https://res.cloudinary.com/demo/image/upload/getting-started/shoes.jpg', {
-        public_id: 'shoes',
+const deleteFromCloudinary = async (publicId) => {
+    try {
+        if (!publicId) return null;
+        const response = await cloudinary.uploader.destroy(publicId, {
+            resource_type: "auto" // or "video" if deleting a video
+        });
+        return response;
+    } catch (error) {
+        console.log("Error deleting from Cloudinary", error);
+        return null;
     }
-)
-.catch((error) => {
-    console.log(error);
-});
+};
 
 
 
-console.log(uploadResult);
 
-export const {uploadOnCloudinary}
+
+export  {uploadOnCloudinary,deleteFromCloudinary}

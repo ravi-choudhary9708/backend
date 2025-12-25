@@ -19,7 +19,7 @@ const userSchema= new mongoose.Schema(
     lowercase:true,
     trim:true,
    } ,
-   fullname:{
+   fullName:{
     type:String,
     required:true,
     lowercase:true,
@@ -35,7 +35,7 @@ const userSchema= new mongoose.Schema(
    watchhistory:[
     {
         type:mongoose.Schema.Types.ObjectId,
-         ref:"video"
+         ref:"Video"
        }
    ] ,
    password:{
@@ -46,7 +46,7 @@ const userSchema= new mongoose.Schema(
     type:String
    }
 }
-,{timestamps:true})
+,{timestamps:true}) //update created and updatedAt
 
 userSchema.pre("save",async function(next){
     if(!this.isModified("password")) return next()
@@ -64,7 +64,7 @@ userSchema.methods.generateAccessToken = function(){
         _id:this.id,
         email:this.email,
         username:this.username,
-        fullname:this.fullname 
+        fullname:this.fullName 
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
@@ -72,13 +72,12 @@ userSchema.methods.generateAccessToken = function(){
     }
 )
 }
+
+//refreshtoken db me bhi save hota h to hm compare kr lete h login krte time kbhi kbhi
 userSchema.methods.generateRefreshToken = function(){
     return jwt.sign(
         {
         _id:this.id,
-        email:this.email,
-        username:this.username,
-        fullname:this.fullname 
     },
     process.env.REFRESH_TOKEN_SECRET,
     {

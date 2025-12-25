@@ -16,10 +16,13 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 // Routes
-import router from "./routes/user.routes.js";
+import userRouter from "./routes/user.routes.js";
+import videoRouter from "./routes/video.routes.js"
 
 // Routes declaration
-app.use("/api/v1/users", router);
+app.use("/api/v1/users", userRouter);
+app.use("/api/v1/video", videoRouter);
+
 
 
 app._router.stack.forEach((r) => {
